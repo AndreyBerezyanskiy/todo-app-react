@@ -5,14 +5,14 @@ import { Todo } from '../../types/Todo';
 interface Props {
   todo: Todo;
   onDeleteTodo: (todoId: number) => void;
-  deletedTodos: number[];
+  processingTodos: number[];
   onUpdateTodo: (id: number, title: string, status: boolean,) => void;
 }
 
-export const TodoItem: React.FC<Props> = ({
+export const TodoItem: React.FC<Props> = React.memo(({
   todo,
   onDeleteTodo,
-  deletedTodos,
+  processingTodos,
   onUpdateTodo,
 }) => {
   const { title, completed, id } = todo;
@@ -58,7 +58,7 @@ export const TodoItem: React.FC<Props> = ({
     handleChangeTitle();
   };
 
-  const handleEscCancel = (event : React.KeyboardEvent<HTMLInputElement>) => {
+  const handleCancelForm = (event : React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Escape') {
       setIsEditingForm(false);
       setTitleTodo(title);
@@ -86,7 +86,7 @@ export const TodoItem: React.FC<Props> = ({
               value={titleTodo}
               onChange={handleInputTitle}
               onBlur={handleChangeTitle}
-              onKeyUp={handleEscCancel}
+              onKeyUp={handleCancelForm}
               /* eslint-disable-next-line */
               autoFocus
             />
@@ -111,7 +111,7 @@ export const TodoItem: React.FC<Props> = ({
         )}
       <div className={cn(
         'modal overlay',
-        { 'is-active': id === 0 || deletedTodos.includes(id) },
+        { 'is-active': id === 0 || processingTodos.includes(id) },
       )}
       >
         <div className="modal-background has-background-white-ter" />
@@ -119,4 +119,4 @@ export const TodoItem: React.FC<Props> = ({
       </div>
     </div>
   );
-};
+});

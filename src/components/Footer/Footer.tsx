@@ -21,37 +21,18 @@ export const Footer: React.FC<Props> = ({
       {`${activeTodosAmount} items left`}
     </span>
 
-    {/* Active filter should have a 'selected' class */}
     <nav className="filter">
-      <a
-        href="#/"
-        className={cn('filter__link', {
-          selected: sortType === SortType.ALL,
-        })}
-        onClick={() => onSort(SortType.ALL)}
-      >
-        All
-      </a>
-
-      <a
-        href="#/active"
-        className={cn('filter__link', {
-          selected: sortType === SortType.ACTIVE,
-        })}
-        onClick={() => onSort(SortType.ACTIVE)}
-      >
-        Active
-      </a>
-
-      <a
-        href="#/completed"
-        className={cn('filter__link', {
-          selected: sortType === SortType.COMPLETED,
-        })}
-        onClick={() => onSort(SortType.COMPLETED)}
-      >
-        Completed
-      </a>
+      {Object.values(SortType).map(filterType => (
+        <a
+          href="#/"
+          className={cn('filter__link', {
+            selected: sortType === filterType,
+          })}
+          onClick={() => onSort(filterType)}
+        >
+          {filterType}
+        </a>
+      ))}
     </nav>
 
     <button

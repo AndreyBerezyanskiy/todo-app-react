@@ -19,23 +19,33 @@ const USER_ID = 6358;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorType, setErrorType] = useState(ErrorType.NONE);
+  const [errorType, setErrorType] = useState<ErrorType>(ErrorType.NONE);
   const [sortType, setSortType] = useState<SortType>(SortType.ALL);
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [deletedTodos, setDeletedTodos] = useState<number[]>([]);
+  const [processingTodos, setProcessingTodos] = useState<number[]>([]);
 
-  const isTodos = todos.length !== 0;
-  const activeTodosAmount = todos.filter(todo => !todo.completed).length;
-  const isCompletedTodos = todos.some(todo => todo.completed);
-  const completedTodos = todos.filter(todo => todo.completed);
-  const isAllCompleted = todos.length === completedTodos.length;
+  const hasTodos = todos.length !== 0;
+  const activeTodosAmount = useMemo(
+    () => todos.filter(todo => !todo.completed).length, [todos],
+  );
 
-  const autoCloseNotification = () => {
+  const isCompletedTodos = useMemo(
+    () => todos.some(todo => todo.completed), [todos],
+  );
+
+  const completedTodos = useMemo(
+    () => todos.filter(todo => todo.completed), [todos],
+  );
+
+  const isAllCompleted = (
+    todos.length === completedTodos.length && todos.length > 0);
+
+  const autoCloseNotification = useCallback(() => {
     setTimeout(() => {
       setErrorType(ErrorType.NONE);
     }, 3000);
-  };
+  }, []);
 
   const addErrorMessage = (errorMessage: ErrorType) => {
     setErrorType(errorMessage);
@@ -48,11 +58,12 @@ export const App: React.FC = () => {
       const data = await getTodos(USER_ID);
 
       setTodos(data);
-      setIsLoading(false);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(error);
       addErrorMessage(ErrorType.GET);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -72,7 +83,9 @@ export const App: React.FC = () => {
     prepareTodos(todos, sortType)
   ), [todos, sortType]);
 
-  const handleAddTodo = async (title: string, userId: number) => {
+  const handleAddTodo = useCallback(async (
+    title: string, userId: number,
+  ) => {
     const newTempTodo = {
       id: 0,
       userId: USER_ID,
@@ -92,19 +105,19 @@ export const App: React.FC = () => {
       setTempTodo(null);
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const handleDeleteTodo = async (todoId: number) => {
+  const handleDeleteTodo = useCallback(async (todoId: number) => {
     try {
-      setDeletedTodos(prevId => ([...prevId, todoId]));
+      setProcessingTodos(prevId => ([...prevId, todoId]));
       await deleteTodo(todoId);
       await fetchedTodos();
     } catch (error) {
       addErrorMessage(ErrorType.DELETE);
     } finally {
-      setDeletedTodos([]);
+      setProcessingTodos([]);
     }
-  };
+  }, []);
 
   const handleClearCompleted = () => {
     completedTodos.forEach(todo => {
@@ -112,21 +125,21 @@ export const App: React.FC = () => {
     });
   };
 
-  const handleUpdateTodo = async (
+  const handleUpdateTodo = useCallback(async (
     todoId: number,
     title: string,
     completed: boolean,
   ) => {
     try {
-      setDeletedTodos(prevId => ([...prevId, todoId]));
+      setProcessingTodos(prevId => ([...prevId, todoId]));
       await updateTodo(todoId, title, completed);
       await fetchedTodos();
     } catch (error) {
       addErrorMessage(ErrorType.UPDATE);
     } finally {
-      setDeletedTodos([]);
+      setProcessingTodos([]);
     }
-  };
+  }, []);
 
   const handleToggleAllTodos = () => {
     if (isAllCompleted) {
@@ -169,11 +182,11 @@ export const App: React.FC = () => {
           todos={visibleTodos}
           tempTodo={tempTodo}
           onDeleteTodo={handleDeleteTodo}
-          deletedTodos={deletedTodos}
+          processingTodos={processingTodos}
           onUpdateTodo={handleUpdateTodo}
         />
 
-        {isTodos && (
+        {hasTodos && (
           <Footer
             activeTodosAmount={activeTodosAmount}
             onSort={handleSortTodos}
@@ -184,12 +197,10 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {errorType && (
-        <Notification
-          errorType={errorType}
-          onCloseNotification={handleCloseNotification}
-        />
-      )}
+      <Notification
+        errorType={errorType}
+        onCloseNotification={handleCloseNotification}
+      />
     </div>
   );
 };

@@ -7,15 +7,15 @@ interface Props {
   todos: Todo[];
   tempTodo: Todo | null;
   onDeleteTodo: (todoId: number) => void;
-  deletedTodos: number[];
+  processingTodos: number[];
   onUpdateTodo: (id: number, title: string, status: boolean,) => void;
 }
 
-export const TodoList: React.FC<Props> = ({
+export const TodoList: React.FC<Props> = React.memo(({
   todos,
   tempTodo,
   onDeleteTodo,
-  deletedTodos,
+  processingTodos,
   onUpdateTodo,
 }) => (
   <section className="todoapp__main">
@@ -29,7 +29,7 @@ export const TodoList: React.FC<Props> = ({
           <TodoItem
             todo={todo}
             onDeleteTodo={onDeleteTodo}
-            deletedTodos={deletedTodos}
+            processingTodos={processingTodos}
             onUpdateTodo={onUpdateTodo}
           />
         </CSSTransition>
@@ -44,11 +44,11 @@ export const TodoList: React.FC<Props> = ({
           <TodoItem
             todo={tempTodo}
             onDeleteTodo={onDeleteTodo}
-            deletedTodos={deletedTodos}
+            processingTodos={processingTodos}
             onUpdateTodo={onUpdateTodo}
           />
         </CSSTransition>
       )}
     </TransitionGroup>
   </section>
-);
+));
