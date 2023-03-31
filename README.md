@@ -46,4 +46,4 @@ The front-end of the application is built using React, with TypeScript used for 
 
 The application provides a simple and user-friendly interface that allows users to manage their tasks effectively. The use of TypeScript and Bulma ensures that the application is robust, scalable, and easy to maintain.
 
-  . - [DEMO LINK](https://andreyberezyanskiy.github.io/todo-app-react/)
+   - [DEMO LINK](https://andreyberezyanskiy.github.io/todo-app-react/)
