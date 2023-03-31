@@ -1,6 +1,6 @@
 # React Todo App
 
-1. This app lets users manage tasks by creating, deleting and editing them. It also features a filter that allows users to view tasks based on completion status, whether completed, incomplete, or all tasks.
+This app lets users manage tasks by creating, deleting and editing them. It also features a filter that allows users to view tasks based on completion status, whether completed, incomplete, or all tasks.
 
 
 # Getting Started
